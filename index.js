@@ -52,11 +52,12 @@ FTP.prototype.initialize = function (options) {
     cwd: '', // Use a different working directory
     additionalLftpCommands: '', // Additional commands to pass to lftp, splitted by ';'
     requireSSHKey: false, // This option for SFTP Protocol with ssh key authentication
-    sshKeyPath: '' // ssh key path for, SFTP Protocol with ssh key authentication
+    sshKeyPath: '', // ssh key path for, SFTP Protocol with ssh key authentication
+    autoExit: true
   }
 
   // Extend options with defaults
-  var opts = _.pick(_.extend(defaults, options), 'host', 'username', 'password', 'port', 'escape', 'retries', 'timeout', 'retryInterval', 'retryIntervalMultiplier', 'requiresPassword', 'protocol', 'autoConfirm', 'cwd', 'additionalLftpCommands', 'requireSSHKey', 'sshKeyPath')
+  var opts = _.pick(_.extend(defaults, options), 'host', 'username', 'password', 'port', 'escape', 'retries', 'timeout', 'retryInterval', 'retryIntervalMultiplier', 'requiresPassword', 'protocol', 'autoConfirm', 'cwd', 'additionalLftpCommands', 'requireSSHKey', 'sshKeyPath', 'autoExit')
 
   // Validation
   if (!opts.host) throw new Error('You need to set a host.')
@@ -185,7 +186,7 @@ FTP.prototype.execAsStream = function (cmds) {
     }
   }
 
-  return dcp.spawn('lftp', ['-c', cmd], spawnoptions)
+  return dcp.spawn('lftp', [this.options.autoExit ? '-c' : '-e', cmd], spawnoptions)
 }
 
 FTP.prototype.raw = function (cmd) {
