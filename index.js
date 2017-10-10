@@ -188,6 +188,27 @@ FTP.prototype.execAsStream = function (cmds) {
   return dcp.spawn('lftp', ['-c', cmd], spawnoptions)
 }
 
+FTP.prototype.execAsDuplex = function (cmds) {
+  if (typeof cmds === 'string') {
+    cmds = cmds.split(';')
+  }
+  if (Array.isArray(cmds)) {
+    this.cmds = this.cmds.concat(cmds)
+  }
+
+  var cmd = this.prepareLFTPOptions().concat(this.cmds).join(';')
+  var spawnoptions
+
+  this.cmds = []
+  if (this.options.cwd) {
+    spawnoptions = {
+      cwd: this.options.cwd
+    }
+  }
+
+  return dcp.spawn('lftp', ['-e', cmd], spawnoptions)
+}
+
 FTP.prototype.raw = function (cmd) {
   if (cmd && typeof cmd === 'string') {
     this.cmds.push(cmd)
